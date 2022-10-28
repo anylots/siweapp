@@ -20,8 +20,6 @@ async fn main() {
     // siwe_test();
 }
 
-
-
 async fn sign_verify() -> Result<(), Box<dyn std::error::Error>> {
     // let message: Message = "aaadfsg".parse::<Message>()?;
 
@@ -43,9 +41,9 @@ async fn sign_verify() -> Result<(), Box<dyn std::error::Error>> {
     Chain ID: 1
     Nonce: kEWepMt9knR6lWJ6A
     Issued At: 2021-12-07T18:28:18.807Z"#;
-    
+
     //63f9725f107358c9115bc9d86c72dd5823e9b1e6
-                                           //0x63F9725f107358c9115BC9d86c72dD5823E9B1E6
+    //0x63F9725f107358c9115BC9d86c72dD5823E9B1E6
 
     //sign a message
     let signature: Signature = wallet.sign_message(string_message).await?;
@@ -74,13 +72,18 @@ Issued At: 2021-12-07T18:28:18.807Z"#,
     .unwrap();
 
     let sig = <[u8; 65]>::from(signature);
-    println!("{}", "verify_eip191 start");
 
+    let mut r_bytes = [0u8; 32];
+    let mut s_bytes = [0u8; 32];
+    signature.r.to_big_endian(&mut r_bytes);
+    signature.s.to_big_endian(&mut s_bytes);
+    let s = r_bytes + s_bytes;
+    println!("{}", "verify_eip191 start");
 
     // if let Err(e) = message.verify(&signature).await {
     //     // message cannot be correctly authenticated at this time
     // }
-    
+
     let signer: Vec<u8> = msg.verify_eip191(&sig)?;
     println!("{}", "verify_eip191 end");
 
@@ -107,4 +110,3 @@ Issued At: 2021-12-07T18:28:18.807Z"#,
     println!("{}", "verify_eip191:");
     println!("{}", "verify_eip191:");
 }
-
