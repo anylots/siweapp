@@ -5,14 +5,12 @@ use ethers;
 use ethers::core::types::H160;
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::Signature;
-use siwe::Message;
 use sha3::{Digest, Keccak256};
+use siwe::Message;
 
 #[async_std::main]
 async fn main() {
     println!("SIWE app");
-
-
 
     sign_verify().await;
 
@@ -30,7 +28,6 @@ async fn sign_verify() -> Result<(), Box<dyn std::error::Error>> {
     let address = wallet.address();
     let address_hex = hex::encode(H160::as_bytes(&address).to_vec());
     println!("{}", address_hex);
-
     let string_message = r#"service.org wants you to sign in with your Ethereum account:
 0x63F9725f107358c9115BC9d86c72dD5823E9B1E6
 
@@ -60,13 +57,11 @@ Resources:
 
     println!("{}", "verify");
 
-    let msg = Message::from_str(string_message)
-    .unwrap();
+    let msg = Message::from_str(string_message).unwrap();
 
     let sig = <[u8; 65]>::from(signature);
 
-    let a:Vec<u8>= Vec::from(signature);
-
+    let a: Vec<u8> = Vec::from(signature);
 
     println!("{}", "verify_eip191 start");
 
@@ -76,12 +71,14 @@ Resources:
     let signer: Vec<u8> = msg.verify_eip191(&sig)?;
     println!("{}", "verify_eip191 end");
 
+    let test = &signer[1..];
 
-    let address123=Keccak256::default().chain_update( signer);
+    let address123 = Keccak256::default().chain_update(test);
 
-    let a1=address123.finalize();
-    let s1=hex::encode(&a1[12..]);
-    let b1=a.bytes();
+    let mut a1 = address123.finalize();
+    let mut a2 = a1.as_slice();
+    let s1 = hex::encode(&a2[12..]);
+    // let b1 = a.bytes();
 
     // println!("{}", hex::encode(address.finalize()));
 
