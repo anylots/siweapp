@@ -2135,6 +2135,7 @@ dependencies = [
  "async-std",
  "ethers",
  "hex",
+ "sha3",
  "siwe",
 ]
 
