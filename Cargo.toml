@@ -11,4 +11,6 @@ ethers = "0.17.0"
 hex = "0.4"
 async-std = { version = "1.10", features = ["attributes"] }
 sha3 = "0.10.2"
-
+actix-web = "3"
+serde = "1.0.117"
+actix-cors = "0.5.4"
