@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Dapp } from "./components/Dapp";
 import App from "./components/App";
-import Test from "./components/Test";
 
 // We import bootstrap here, but you can remove if you want
 // import "bootstrap/dist/css/bootstrap.css";
