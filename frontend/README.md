@@ -1,4 +1,4 @@
-# Sample React Dapp
+# Frontend Of Sign In With Ethereum 
 
 This directory has a sample Dapp to interact with your contracts, built using
 React.

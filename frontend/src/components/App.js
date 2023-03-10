@@ -3,7 +3,6 @@ import { Route, Switch, HashRouter, NavLink, Link } from 'react-router-dom';
 import Siwe from './Siwe';
 
 import Identifier from './Identifier';
-import ConnectWallet from './ConnectWallet';
 import avatar from "../images/show/avatar/avatar1.jpg";
 import { Layout, Menu } from 'antd'
 
@@ -40,11 +39,6 @@ export default class App extends React.Component {
                         }}>Sign With In Ethereum
                         </a>
 
-                        {/* connect to web3 */}
-                        {/* <div style={{ marginLeft: "320px" }} >
-                            <ConnectWallet />
-                        </div> */}
-
                     </div>
                 </div>
 
@@ -55,33 +49,7 @@ export default class App extends React.Component {
                     <div style={{ marginTop: "60px", width: "240px" }}>
                         <Siwe region="Avalanche" avatar={avatar} nickName="Test"></Siwe>
                     </div>
-                    {/* <div style={{ width: "240px" }}>
-                        <HashRouter style={{ width: "240px" }}>
-                            <Layout style={{ minHeight: '100vh', display: "flex", width: "240px" }}>
-                                <Sider collapsed={false} style={{ width: "240px", backgroundColor: "#111111" }}>
 
-                                    <Menu theme="dark" mode="inline" style={{ width: "240px", backgroundColor: "#111111" }}>
-
-                                        <Menu.Item style={{ width: "240px", backgroundColor: "#111111" }} key="/home/siwe">
-                                            <NavLink to="/home/siwe">角色列表</NavLink>
-                                        </Menu.Item >
-                                    </Menu>
-                                    <div style={{ marginTop: "60px", width: "240px", backgroundColor: "#111111" }}>
-                                        <Identifier region="Avalanche" avatar={avatar} nickName="Test"></Identifier>
-                                    </div>
-                                </Sider>
-                                <Layout >
-                                    <Content className="us_content" style={{ backgroundColor: "#111111" }}>
-                                        <Switch>
-                                            <Route path="/home/siwe" component={Siwe} />
-                                        </Switch>
-
-                                    </Content>
-                                </Layout>
-                            </Layout>
-                        </HashRouter>
-
-                    </div> */}
                 </div>
             </div>
         );

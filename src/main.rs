@@ -13,10 +13,6 @@ use serde::Deserialize;
 use sha3::{Digest, Keccak256};
 use siwe::Message;
 
-// #[async_std::main]
-// async fn main() {
-
-// }
 
 #[derive(Deserialize)]
 struct Info {
@@ -65,7 +61,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
 
-        App::new().wrap(cors).service(hello)
+        App::new().wrap(cors).service(signIn)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
@@ -78,17 +74,15 @@ async fn index(req: HttpRequest) -> &'static str {
 }
 
 #[post("/")]
-async fn hello(request: web::Json<Info>) -> impl Responder {
-    println!("hello");
+async fn signIn(request: web::Json<Info>) -> impl Responder {
+    println!("signIn......");
 
     println!("{}", request.sig);
-    // let message = &request.message;
-    // let signature = &request.sig;
 
     let result = verify_siwe(&request.message, &request.sig).await;
     assert!(result.is_ok());
 
-    HttpResponse::Ok().body("Hello world!")
+    HttpResponse::Ok().body("verify success")
 }
 async fn verify_siwe(message: &String, signature: &String) -> Result<(), Box<dyn std::error::Error>> {
     let siwe_msg = Message::from_str(message.as_str()).unwrap();
