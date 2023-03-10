@@ -17,7 +17,7 @@ export default class Identifier extends Component {
     render() {
 
         return (
-            <div>
+            <div style={{ "text-align":"center"}}>
 
                 <div calssName="card" style={{ height: "440px", "border-radius": "0.25rem", background: "linear-gradient(44.19deg,#1c7bff -.88%,#9d6fff 97.74%)" }}>
                     {/* <img src={passport} style={{ marginLeft: "-24px" }} class="card-top" /> */}

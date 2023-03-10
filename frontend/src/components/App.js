@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, HashRouter, NavLink, Link } from 'react-router-dom';
-import DirectAward from './DirectAward';
+import Siwe from './Siwe';
 
 import Identifier from './Identifier';
 import ConnectWallet from './ConnectWallet';
@@ -26,8 +26,8 @@ export default class App extends React.Component {
                         <div>
                             <h1 style={{
                                 color: "#FFFFFF", "WebkitBackgroundClip": "text"
-                                , "fontFamily": "Galaxy", "fontSize": "20px", "marginTop": "10px", "marginLeft": "20px"
-                            }}>Joyboy
+                                , "fontFamily": "Galaxy", "fontSize": "20px", "marginTop": "0px", "marginLeft": "20px"
+                            }}>SIWE APP
                             </h1>
                         </div>
                         <div className="collapse navbar-collapse" id="navbarText" style={{ color: "#ffffff" }}>
@@ -36,41 +36,44 @@ export default class App extends React.Component {
                     <div style={{ float: "right", width: "620px" }}>
                         <a className="navbar-brand" href="#" style={{
                             position: "absolute", "-webkit-font-smoothing": "antialiased", fontFamily: "Montserrat",
-                            top: "13px", "fontSize": "16px", color: "#ffffffbb"
-                        }}>Ethereum Marketing operation workbench
+                            top: "3px", "fontSize": "16px", color: "#ffffffbb", "marginLeft": "280px"
+                        }}>Sign With In Ethereum
                         </a>
 
                         {/* connect to web3 */}
-                        <div style={{ marginLeft: "320px" }} >
+                        {/* <div style={{ marginLeft: "320px" }} >
                             <ConnectWallet />
-                        </div>
+                        </div> */}
 
                     </div>
                 </div>
 
-                <div style={{ marginTop: "40px" }}>
-                    <div >
-                        <HashRouter>
-                            <Layout  style={{ minHeight: '100vh', display: "flex" }}>
-                                <Sider collapsed={false} >
-        
-                                    <Menu theme="dark" mode="inline" >
-                                        <Menu.Item key="/home/users">
-                                            <NavLink to="/home/users">用户列表</NavLink>
-                                        </Menu.Item >
-                                        <Menu.Item key="/home/roles">
-                                            <NavLink to="/home/roles">角色列表</NavLink>
+                <div style={{ marginTop: "-10px", width: "240px",display: "flex" }}>
+                    <div style={{ marginTop: "60px", width: "240px"}}>
+                        <Identifier region="Avalanche" avatar={avatar} nickName="Test"></Identifier>
+                    </div>
+                    <div style={{ marginTop: "60px", width: "240px" }}>
+                        <Siwe region="Avalanche" avatar={avatar} nickName="Test"></Siwe>
+                    </div>
+                    {/* <div style={{ width: "240px" }}>
+                        <HashRouter style={{ width: "240px" }}>
+                            <Layout style={{ minHeight: '100vh', display: "flex", width: "240px" }}>
+                                <Sider collapsed={false} style={{ width: "240px", backgroundColor: "#111111" }}>
+
+                                    <Menu theme="dark" mode="inline" style={{ width: "240px", backgroundColor: "#111111" }}>
+
+                                        <Menu.Item style={{ width: "240px", backgroundColor: "#111111" }} key="/home/siwe">
+                                            <NavLink to="/home/siwe">角色列表</NavLink>
                                         </Menu.Item >
                                     </Menu>
-                                    <div style={{ marginTop: "60px" }}>
+                                    <div style={{ marginTop: "60px", width: "240px", backgroundColor: "#111111" }}>
                                         <Identifier region="Avalanche" avatar={avatar} nickName="Test"></Identifier>
                                     </div>
                                 </Sider>
-                                <Layout>
-                                    <Content className="us_content">
+                                <Layout >
+                                    <Content className="us_content" style={{ backgroundColor: "#111111" }}>
                                         <Switch>
-                                            <Route path="/home/users" component={DirectAward} />
-                                            <Route path="/home/roles" component={DirectAward} />
+                                            <Route path="/home/siwe" component={Siwe} />
                                         </Switch>
 
                                     </Content>
@@ -78,7 +81,7 @@ export default class App extends React.Component {
                             </Layout>
                         </HashRouter>
 
-                    </div>
+                    </div> */}
                 </div>
             </div>
         );
