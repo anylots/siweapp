@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import { NetworkErrorMessage } from "./NetworkErrorMessage";
 
 const HARDHAT_NETWORK_ID = '1337';
@@ -61,10 +60,6 @@ export default class SignIn extends Component {
    * @return {*}
    */
   async connectWallet() {
-    // This method is run when the user clicks the Connect. It connects the
-    // dapp to the user's wallet, and initializes it.
-
-
     //check metamsk is installed
     if (!this.installedMetaMask()) {
       window.open("https://metamask.io/", "install metamsk");
@@ -87,10 +82,7 @@ export default class SignIn extends Component {
 
     // We reinitialize it whenever the user changes their account.
     window.ethereum.on("accountsChanged", ([newAddress]) => {
-      // `accountsChanged` event can be triggered with an undefined newAddress.
-      // This happens when the user removes the Dapp from the "Connected
-      // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
-      // To avoid errors, we reset the dapp state 
+
       this.setState({ selectedAddress: newAddress, buttonText: newAddress.substring(0, 9) });
     });
 

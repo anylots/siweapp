@@ -1,17 +1,9 @@
-import React, { Component } from 'react';
-import { Route, Switch, HashRouter, NavLink, Link } from 'react-router-dom';
+import React from 'react';
 import Siwe from './Siwe';
-
 import Identifier from './Identifier';
 import avatar from "../images/show/avatar/avatar1.jpg";
-import { Layout, Menu } from 'antd'
-
-const { Content, Sider } = Layout;
-const HARDHAT_NETWORK_ID = '1337';
-
 
 export default class App extends React.Component {
-
     constructor(props) {
         super(props);
     }
@@ -38,12 +30,11 @@ export default class App extends React.Component {
                             top: "3px", "fontSize": "16px", color: "#ffffffbb", "marginLeft": "280px"
                         }}>Sign With In Ethereum
                         </a>
-
                     </div>
                 </div>
 
-                <div style={{ marginTop: "-10px", width: "240px",display: "flex" }}>
-                    <div style={{ marginTop: "60px", width: "240px"}}>
+                <div style={{ marginTop: "-10px", width: "240px", display: "flex" }}>
+                    <div style={{ marginTop: "60px", width: "240px" }}>
                         <Identifier region="Avalanche" avatar={avatar} nickName="Test"></Identifier>
                     </div>
                     <div style={{ marginTop: "60px", width: "240px" }}>

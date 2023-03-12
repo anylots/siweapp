@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 
 // We'll use ethers to interact with the Ethereum network and our contract
-import { ethers } from "ethers";
 import SignIn from "./SignIn";
-
-
-const HARDHAT_NETWORK_ID = '1337';
 
 
 export default class Identifier extends Component {

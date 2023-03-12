@@ -99,13 +99,6 @@ export default class Siwe extends Component {
         })
 
     }
-
-
 }
 
-
-// const connectWalletBtn = document.getElementById('connectWalletBtn');
-// const siweBtn = document.getElementById('siweBtn');
-// connectWalletBtn.onclick = connectWallet;
-// siweBtn.onclick = signInWithEthereum;
 
