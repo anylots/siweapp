@@ -1,2 +1,4 @@
-# Sign In With Ethereum Backend Using Rust
+# Sign In With Ethereum Using Rust
 Verify the ownership of account through Ethereum ecdsa and signature format;
+#### Frontend: rust for wasm
+#### Banckend: rust for siwe
