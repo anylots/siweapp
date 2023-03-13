@@ -21,5 +21,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn createSiweMsg(address: String) -> String {
     let mut msg = String::from("Domain");
-    msg = msg + " wants";
+    msg = msg + " wants you to sign in with your Ethereum account:";
+    msg = msg + address;
 }
