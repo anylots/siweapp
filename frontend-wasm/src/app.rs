@@ -19,8 +19,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn createSiweMsg(address: String) -> String {
+pub fn createSiweStr(address: String) -> String {
     let mut msg = String::from("Domain");
-    msg = msg + " wants you to sign in with your Ethereum account:";
-    msg = msg + address;
+    msg += " wants you to sign in with your Ethereum account:\n";
+    msg += address + "\n";
+    msg += "I accept the ServiceOrg Terms of Service: https://service.org/tos\n";
+
+    msg += "URI: https://service.org/login\n";
+    msg += "Version: 1\n";
+    msg += "Chain ID: 1\n";
+    msg += "Nonce: 32891756";
+    msg += "Issued At: 2021-09-30T16:25:24Z\n";
+    msg += "Resources:\n";
+    msg += "- ipfs://bafybeiemxf5abjwjbikoz4mc3a3dla6ual3jsgpdr4cjr3oz3evfyavhwq/\n";
+    msg += "- https://example.com/my-web2-claim.json";
+}
+
+pub fn signIn(address: String){
+    let msg = createSiweStr(address);
 }
