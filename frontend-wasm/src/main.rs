@@ -1,3 +1,5 @@
+mod app;
+
 use std::str::FromStr;
 
 use ethers::core::types::Address;
