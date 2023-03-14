@@ -32,7 +32,6 @@ pub fn createSiweStr(address: String) -> String {
     msg += address.as_str();
     msg += "\n";
     msg += "I accept the ServiceOrg Terms of Service: https://service.org/tos\n";
-
     msg += "URI: https://service.org/login\n";
     msg += "Version: 1\n";
     msg += "Chain ID: 1\n";
