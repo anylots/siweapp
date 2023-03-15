@@ -2588,6 +2588,7 @@ name = "siwe-frontend"
 version = "0.1.0"
 dependencies = [
  "ethers",
+ "hex",
  "reqwest",
  "serde_json",
  "wasm-bindgen",

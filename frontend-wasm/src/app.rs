@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn createSiweStr(address: String) -> String {
     let mut msg = String::from("Domain");
-    msg += " wants you to sign in with your Ethereum account:\n";
+    msg += " wants you to sign in with your Ethereum account:<br>";
     msg += address.as_str();
     msg += "\n";
     msg += "I accept the ServiceOrg Terms of Service: https://service.org/tos\n";
@@ -35,12 +35,12 @@ pub fn createSiweStr(address: String) -> String {
     msg += "Nonce: 32891756";
     msg += "Issued At: 2021-09-30T16:25:24Z\n";
     msg += "Resources:\n";
-    msg += "- ipfs://bafybeiemxf5abjwjbikoz4mc3a3dla6ual3jsgpdr4cjr3oz3evfyavhwq/\n";
     msg += "- https://example.com/my-web2-claim.json";
 
     return msg;
 }
 
+// #[tokio::test]
 pub async fn signIn(){
     let msg = createSiweStr("0x63F9725f107358c9115BC9d86c72dD5823E9B1E6".to_string());
     let wallet = "dcf2cbdd171a21c480aa7f53d77f31bb102282b3ff099c78e3118b37348c72f7"

@@ -1,6 +1,8 @@
 mod app;
 
 use std::str::FromStr;
+use ethers::signers::{LocalWallet, Signer};
+use hex::FromHex;
 
 use ethers::core::types::Address;
 use ethers::prelude::*;
@@ -57,6 +59,7 @@ async fn fetch_balance(url: &'static str, account: String) -> Result<String, Fet
 enum Msg {
     SetBalance(FetchState<String>),
     SetAccount(String),
+    SetPrivateKey(String),
     GetBalance(String),
     NoticeSignIn(String),
     GetError,
@@ -64,8 +67,8 @@ enum Msg {
 struct App {
     account_state: FetchState<String>,
     account: String,
+    privateKey: String,
     sign_msg: String,
-
 }
 
 impl Component for App {
@@ -76,6 +79,7 @@ impl Component for App {
         Self {
             account_state: FetchState::NotFetching,
             account: String::from("0x1"),
+            privateKey: String::from("0x1"),
             sign_msg: String::from("0x1"),
         }
     }
@@ -102,9 +106,25 @@ impl Component for App {
                 self.account = new_account;
                 true
             }
+
+            Msg::SetPrivateKey(privateKey) => {
+                self.privateKey = privateKey;
+                true
+            }
+
             Msg::NoticeSignIn(new_account) => {
-                let msg = app::createSiweStr( self.account.clone());
-                self.sign_msg = msg;
+                // instantiate the wallet
+                
+                let wallet = self.privateKey.as_str()
+                    .parse::<LocalWallet>();
+                let address_hex = match wallet{
+                    Ok(addr) => hex::encode(H160::as_bytes(&addr.address()).to_vec()),
+                    Err(e) => "0x1".to_string(),
+
+                };
+                self.account = address_hex.clone();
+                let mut msg = app::createSiweStr(address_hex);
+                self.sign_msg = msg.replace("\n", "<br>");
                 true
             }
             Msg::GetError => {
@@ -126,7 +146,7 @@ impl Component for App {
             let event: InputEvent = e.dyn_into().unwrap_throw();
             let event_target = event.target().unwrap_throw();
             let target: HtmlInputElement = event_target.dyn_into().unwrap_throw();
-            Msg::SetAccount(target.value())
+            Msg::SetPrivateKey(target.value())
         });
 
         let value: String = match &self.account_state {
@@ -136,38 +156,54 @@ impl Component for App {
             FetchState::Failed(err) => String::from("0x1"),
         };
 
-        // let mut msg = app::createSiweStr("0x63F9725f107358c9115BC9d86c72dD5823E9B1E6".to_string());
-        // msg = msg.replace("\n", "</br>");
+        html! {
+            <main>
+            <h1 class = "caption">{ "Sign-In With Ethereum" }</h1>
+
+            {
+                self.view_sign_msg(ctx)
+            }
+
+        <div>
+          <lable>{"PrivateKey:"}</lable>
+          <input {oninput}  class = "privateKey" value={self.privateKey.clone()} />
+        </div>
+
+         <div>
+            <lable>{"Account:"}</lable>
+            <lable> {"0x"} {self.account.clone()} </lable>
+         </div>
+         <div class="operatiton">
+           <button onclick={ctx.link().callback(|_| Msg::GetBalance(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
+            { "Check Balance" }
+           </button>
+           <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
+            { "SignIn" }
+           </button>
+         </div>
+        </main>
+        }
+    }
+}
+
+impl App {
+    fn view_sign_msg(&self, ctx: &Context<Self>) -> Html {
+        let sign_msg = &self.sign_msg.as_str();
+        // let parts: Vec<&str> = sign_msg.split("<br>").collect();
 
         html! {
-           <main>
-           <h1 class = "caption">{ "Sign-In With Ethereum" }</h1>
-           <div class = "pream">
-           <lable>{self.sign_msg.clone()}</lable>
-           </div>
-
-           <div>
-             <lable>{"PrivateKey:"}</lable>
-             <input class = "privateKey"  />
-           </div>
-            <div>
-               <lable>{"Account:"}</lable>
-               <input {oninput} value={self.account.clone()} />
+            <div class = "pream">
+            { for sign_msg.split("<br>").map(|s| html!{<p>{ s }</p>}) }
             </div>
-            <div class="operatiton">
-              <button onclick={ctx.link().callback(|_| Msg::GetBalance(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
-               { "Get Balance" }
-              </button>
-              <button onclick={ctx.link().callback(|_| Msg::NoticeSignIn(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
-               { "SignIn" }
-              </button>
-              {value}
-            </div>
-           </main>
-           }
+        }
     }
 }
 
 fn main() {
+    // let text = "This is some<br>example<br>text";
+    // let parts: Vec<&str> = text.split("<br>").collect();
+    // for part in parts {
+    //     println!("{}", part);
+    // }
     yew::Renderer::<App>::new().render();
 }
