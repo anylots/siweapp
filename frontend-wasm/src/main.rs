@@ -40,10 +40,7 @@ pub enum FetchState<T> {
     Failed(FetchError),
 }
 
-/// Fetches markdown from Yew's README.md.
-///
-/// Consult the following for an example of the fetch api by the team behind web_sys:
-/// https://rustwasm.github.io/wasm-bindgen/examples/fetch.html
+/// fetch_balance.
 async fn fetch_balance(url: &'static str, account: String) -> Result<String, FetchError> {
     let provider = Provider::<Http>::try_from("http://47.242.179.164:9933").unwrap();
 
@@ -61,11 +58,14 @@ enum Msg {
     SetBalance(FetchState<String>),
     SetAccount(String),
     GetBalance(String),
+    NoticeSignIn(String),
     GetError,
 }
 struct App {
-    accountState: FetchState<String>,
+    account_state: FetchState<String>,
     account: String,
+    sign_msg: String,
+
 }
 
 impl Component for App {
@@ -74,15 +74,16 @@ impl Component for App {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            accountState: FetchState::NotFetching,
+            account_state: FetchState::NotFetching,
             account: String::from("0x1"),
+            sign_msg: String::from("0x1"),
         }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::SetBalance(fetch_state) => {
-                self.accountState = fetch_state;
+                self.account_state = fetch_state;
                 true
             }
             Msg::GetBalance(account) => {
@@ -99,6 +100,11 @@ impl Component for App {
             }
             Msg::SetAccount(new_account) => {
                 self.account = new_account;
+                true
+            }
+            Msg::NoticeSignIn(new_account) => {
+                let msg = app::createSiweStr( self.account.clone());
+                self.sign_msg = msg;
                 true
             }
             Msg::GetError => {
@@ -123,16 +129,23 @@ impl Component for App {
             Msg::SetAccount(target.value())
         });
 
-        let value: String = match &self.accountState {
+        let value: String = match &self.account_state {
             FetchState::NotFetching => String::from("0x1"),
             FetchState::Fetching => String::from("fetching"),
             FetchState::Success(data) => data.clone(),
             FetchState::Failed(err) => String::from("0x1"),
         };
 
+        // let mut msg = app::createSiweStr("0x63F9725f107358c9115BC9d86c72dD5823E9B1E6".to_string());
+        // msg = msg.replace("\n", "</br>");
+
         html! {
            <main>
            <h1 class = "caption">{ "Sign-In With Ethereum" }</h1>
+           <div class = "pream">
+           <lable>{self.sign_msg.clone()}</lable>
+           </div>
+
            <div>
              <lable>{"PrivateKey:"}</lable>
              <input class = "privateKey"  />
@@ -145,7 +158,7 @@ impl Component for App {
               <button onclick={ctx.link().callback(|_| Msg::GetBalance(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
                { "Get Balance" }
               </button>
-              <button onclick={ctx.link().callback(|_| Msg::GetError)}>
+              <button onclick={ctx.link().callback(|_| Msg::NoticeSignIn(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
                { "SignIn" }
               </button>
               {value}

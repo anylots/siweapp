@@ -13,6 +13,10 @@ use serde::Deserialize;
 use sha3::{Digest, Keccak256};
 use siwe::Message;
 
+// #[async_std::main]
+// async fn main() {
+
+// }
 
 #[derive(Deserialize)]
 struct Info {
@@ -20,52 +24,55 @@ struct Info {
     sig: String,
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
+// #[actix_web::main]
+ fn main()  {
     println!("start SIWE app");
+
+    getSignature();
 
     // HttpServer::new(|| App::new().wrap(cors).service(hello))
     //     .bind("127.0.0.1:8080")?
     //     .run()
     //     .await
 
-    HttpServer::new(|| {
-        let cors = Cors::default()
-            .allowed_origin("http://127.0.0.1:3000")
-            .allowed_origin("https://127.0.0.1")
-            .allowed_origin("127.0.0.1:3000")
-            .allowed_origin("http://localhost:3000")
-            .allowed_origin("http://localhost")
-            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
-            .allowed_headers(vec![
-                "Access-Control-Allow-Headers",
-                "Authorization",
-                "authorization",
-                "X-Requested-With",
-                "Content-Type",
-                "content-type",
-                "Origin",
-                "Client-id",
-                "user-agent",
-                "User-Agent",
-                "Accept",
-                "Referer",
-                "referer",
-                "Nonce",
-                "signature",
-                "Timestamp",
-                "AppKey",
-                "x-super-properties",
-                "X-Super-Properties",
-            ])
-            .allowed_header(http::header::CONTENT_TYPE)
-            .max_age(3600);
+    // HttpServer::new(|| {
+    //     let cors = Cors::default()
+    //         .allowed_origin("http://127.0.0.1:3000")
+    //         .allowed_origin("https://127.0.0.1")
+    //         .allowed_origin("127.0.0.1:3000")
+    //         .allowed_origin("http://localhost:3000")
+    //         .allowed_origin("http://localhost")
+    //         .allowed_methods(vec!["GET", "POST", "OPTIONS"])
+    //         .allowed_headers(vec![
+    //             "Access-Control-Allow-Headers",
+    //             "Authorization",
+    //             "authorization",
+    //             "X-Requested-With",
+    //             "Content-Type",
+    //             "content-type",
+    //             "Origin",
+    //             "Client-id",
+    //             "user-agent",
+    //             "User-Agent",
+    //             "Accept",
+    //             "Referer",
+    //             "referer",
+    //             "Nonce",
+    //             "signature",
+    //             "Timestamp",
+    //             "AppKey",
+    //             "x-super-properties",
+    //             "X-Super-Properties",
+    //         ])
+    //         .allowed_header(http::header::CONTENT_TYPE)
+    //         .max_age(3600);
 
-        App::new().wrap(cors).service(signIn)
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
+    //     App::new().wrap(cors).service(hello)
+    // })
+    // .bind(("127.0.0.1", 8080))?
+    // .run()
+    // .await
+    
 }
 
 #[get("/index.html")]
@@ -74,15 +81,17 @@ async fn index(req: HttpRequest) -> &'static str {
 }
 
 #[post("/")]
-async fn signIn(request: web::Json<Info>) -> impl Responder {
-    println!("signIn......");
+async fn hello(request: web::Json<Info>) -> impl Responder {
+    println!("hello");
 
     println!("{}", request.sig);
+    // let message = &request.message;
+    // let signature = &request.sig;
 
     let result = verify_siwe(&request.message, &request.sig).await;
     assert!(result.is_ok());
 
-    HttpResponse::Ok().body("verify success")
+    HttpResponse::Ok().body("Hello world!")
 }
 async fn verify_siwe(message: &String, signature: &String) -> Result<(), Box<dyn std::error::Error>> {
     let siwe_msg = Message::from_str(message.as_str()).unwrap();
@@ -159,4 +168,11 @@ Resources:
     println!("{}", "verify_eip191 end");
 
     Ok(())
+}
+
+fn getSignature(){
+    let data = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8,10";
+    let msg = ethers::utils::hash_message(data);
+    println!("{}", msg);
+
 }

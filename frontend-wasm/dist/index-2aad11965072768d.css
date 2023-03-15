@@ -8,8 +8,6 @@ body {
   align-items: center;
   display: flex;
   justify-content: center;
-
-//   background: linear-gradient(to bottom right, #444444, #009a5b);
   font-size: 1rem;
 }
 
@@ -19,36 +17,34 @@ main {
   text-align: center;
 }
 
-.caption{
+.caption {
   margin-left: 30px;
 }
 
-.pream{
-  width: 400px!important;
+.pream {
+  width: 400px !important;
   text-align: left;
   margin-left: 30px;
   margin-bottom: 30px;
 }
-
 
 input {
   width: 400px;
   margin-left: 26px;
 }
 
-.privateKey{
+.privateKey {
   width: 400px;
   margin-left: 10px;
 }
 
-.operatiton{
+.operatiton {
   margin-top: 10px;
 }
 
 .logo {
   height: 20em;
 }
-
 
 h1 + .subtitle {
   display: block;

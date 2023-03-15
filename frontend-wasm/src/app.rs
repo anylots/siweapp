@@ -1,25 +1,22 @@
-use reqwest::blocking::Client;
-use serde_json::{json, Value};
+use reqwest;
+use serde_json::{Value};
 use ethers;
-use ethers::core::types::H160;
-use ethers::prelude::k256;
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::Signature;
 use ethers::core::types::Address;
 use std::str::FromStr;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new();
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let url = "http://47.242.179.164:9933";
+    let client = reqwest::Client::new();
+
     let address = "0x17155EE3e09033955D272E902B52E0c10cB47A91";
     let data = format!("{{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBalance\",\"params\":[\"{}\",\"latest\"],\"id\":1}}", address);
-    let response = client
-        .post(url)
+    let response = client.post(url)
         .header("Content-Type", "application/json")
         .body(data)
-        .send()?
-        .text()?;
-    let json: Value = serde_json::from_str(&response)?;
+        .send().await.unwrap();
+    let json: Value = serde_json::from_str(&response.text().await?)?;
     let balance_hex = json["result"].as_str().unwrap_or_default();
     let balance_dec = u128::from_str_radix(balance_hex.trim_start_matches("0x"), 16)?;
     println!("ETH balance: {} wei", balance_dec);
@@ -44,7 +41,6 @@ pub fn createSiweStr(address: String) -> String {
     return msg;
 }
 
-#[tokio::test]
 pub async fn signIn(){
     let msg = createSiweStr("0x63F9725f107358c9115BC9d86c72dD5823E9B1E6".to_string());
     let wallet = "dcf2cbdd171a21c480aa7f53d77f31bb102282b3ff099c78e3118b37348c72f7"
