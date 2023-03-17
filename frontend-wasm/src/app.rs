@@ -6,6 +6,7 @@ use reqwest;
 use serde_json::Value;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
+use sha3::{Digest, Keccak256};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct SignRequest {
@@ -14,29 +15,9 @@ struct SignRequest {
     address: String,
 }
 
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let url = "http://47.242.179.164:9933";
-    let client = reqwest::Client::new();
-
-    let address = "0x17155EE3e09033955D272E902B52E0c10cB47A91";
-    let data = format!("{{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBalance\",\"params\":[\"{}\",\"latest\"],\"id\":1}}", address);
-    let response = client
-        .post(url)
-        .header("Content-Type", "application/json")
-        .body(data)
-        .send()
-        .await
-        .unwrap();
-    let json: Value = serde_json::from_str(&response.text().await?)?;
-    let balance_hex = json["result"].as_str().unwrap_or_default();
-    let balance_dec = u128::from_str_radix(balance_hex.trim_start_matches("0x"), 16)?;
-    println!("ETH balance: {} wei", balance_dec);
-    Ok(())
-}
-
 pub fn create_siwe_str(address: String) -> String {
     let mut msg = String::from("Domain");
-    msg += " wants you to sign in with your Ethereum account:<br>";
+    msg += " wants you to sign in with your Ethereum account:\n";
     msg += address.as_str();
     msg += "\n";
     msg += "I accept the ServiceOrg Terms of Service: https://service.org/tos\n";
@@ -52,7 +33,7 @@ pub fn create_siwe_str(address: String) -> String {
 }
 
 pub async fn sign_in(message: String, sig: Signature, address: String)->String {
-    let url = "http://127.0.0.1:3030/";
+    let url = "http://127.0.0.1:3030/sign_in";
     let client = reqwest::Client::new();
 
     let request = SignRequest{
@@ -60,12 +41,11 @@ pub async fn sign_in(message: String, sig: Signature, address: String)->String {
         sig,
         address,
     };
-    let data = serde_json::to_string(&request).unwrap().as_str();
-    let param = "{\"msg\":\"teat\"}";
+    let data = serde_json::to_string(&request).unwrap();
     let response = client
         .post(url)
         .header("Content-Type", "application/json")
-        .body(param)
+        .body(data)
         .send()
         .await
         .unwrap();
@@ -86,6 +66,38 @@ pub async fn sign_in_test() {
         Address::from_str("0x63F9725f107358c9115BC9d86c72dD5823E9B1E6").unwrap(),
     );
     assert!(verify_result.is_ok() == true);
-
     println!("{}", "verify");
+}
+
+/// Takes an eth address and returns it as a checksum formatted string.
+pub fn eip55(addr_str: String) -> String {
+    let hash = Keccak256::digest(addr_str.as_bytes());
+    "0x".chars()
+        .chain(addr_str.chars().enumerate().map(|(i, c)| {
+            match (c, hash[i >> 1] & if i % 2 == 0 { 128 } else { 8 } != 0) {
+                ('a'..='f' | 'A'..='F', true) => c.to_ascii_uppercase(),
+                _ => c.to_ascii_lowercase(),
+            }
+        }))
+        .collect()
+}
+
+async fn eth_getBalance() -> Result<(), Box<dyn std::error::Error>> {
+    let url = "https://eth-goerli.g.alchemy.com/v2/hbTrHkM}";
+    let client = reqwest::Client::new();
+
+    let address = "0x17155EE3e09033955D272E902B52E0c10cB47A91";
+    let data = format!("{{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBalance\",\"params\":[\"{}\",\"latest\"],\"id\":1}}", address);
+    let response = client
+        .post(url)
+        .header("Content-Type", "application/json")
+        .body(data)
+        .send()
+        .await
+        .unwrap();
+    let json: Value = serde_json::from_str(&response.text().await?)?;
+    let balance_hex = json["result"].as_str().unwrap_or_default();
+    let balance_dec = u128::from_str_radix(balance_hex.trim_start_matches("0x"), 16)?;
+    println!("ETH balance: {} wei", balance_dec);
+    Ok(())
 }

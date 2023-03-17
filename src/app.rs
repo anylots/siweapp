@@ -1,32 +1,45 @@
-use jsonrpc_core::Result;
-use jsonrpc_derive::rpc;
-use jsonrpc_http_server::*;
+use ethers::core::types::Address;
+use ethers::types::Signature;
+use serde::{Deserialize, Serialize};
+use siwe::Message;
+use siwe::VerificationOpts;
+use std::str::FromStr;
 
-#[rpc]
-pub trait Rpc {
-    /// Adds two numbers and returns a result
-    #[rpc(name = "sign_in")]
-    fn sign_in(&self, msg: String) -> Result<String>;
+#[derive(Serialize, Deserialize, Debug)]
+struct SignRequest {
+    message: String,
+    sig: Signature,
+    address: String,
 }
 
-pub struct RpcImpl;
-impl Rpc for RpcImpl {
-    fn sign_in(&self, msg: String) -> Result<String> {
-        println!("{}", "Test1");
-        Ok("Test1".to_string())
+pub async fn process_sign_in(param: String) -> String {
+    println!("process_sign_in");
+    println!("{}", param);
+    let sign_request: SignRequest = serde_json::from_str(param.as_str()).unwrap();
+    let result = verify_siwe(sign_request.message, sign_request.sig, sign_request.address).await;
+    return result;
+}
+async fn verify_siwe(message: String, signature: Signature, address: String) -> String {
+    //step1. verify ecdsa
+    let verify_result = signature.verify(
+        message.clone(),
+        Address::from_str(address.as_str()).unwrap(),
+    );
+    if verify_result.is_err() {
+        // return "fail".to_string();
     }
-}
+    // return "success".to_string();
 
-pub fn server_start() {
-    let mut io = jsonrpc_core::IoHandler::new();
-    io.extend_with(RpcImpl.to_delegate());
-    let server = ServerBuilder::new(io)
-        .cors(DomainsValidation::AllowOnly(vec![
-            AccessControlAllowOrigin::Any,
-        ]))
-        .threads(3)
-        .start_http(&"127.0.0.1:3030".parse().unwrap())
-        .unwrap();
-
-    server.wait();
+    //step2. verify message opts
+    let siwe_msg: Message = Message::from_str(message.as_str()).unwrap();
+    let sig: [u8; 65] = <[u8; 65]>::from(signature);
+    //opts for verify domain, date, nonce
+    let opts = VerificationOpts {
+        ..Default::default()
+    };
+    if let Err(e) = siwe_msg.verify(&sig, &opts).await {
+        println!("{}", e);
+        // message cannot be correctly authenticated at this time
+    }
+    return "success".to_string();
 }

@@ -2592,6 +2592,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "sha3",
  "wasm-bindgen",
  "web-sys",
  "yew 0.20.0",

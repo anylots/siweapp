@@ -1,14 +1,10 @@
 mod app;
 
 use ethers::signers::{LocalWallet, Signer};
-use hex::FromHex;
 use std::str::FromStr;
-
 use ethers::core::types::Address;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
-use ethers::types::Signature;
-
 use std::error::Error;
 use std::fmt::{self, Debug, Display, Formatter};
 use wasm_bindgen::prelude::*;
@@ -52,9 +48,7 @@ async fn fetch_balance(url: &'static str, account: String) -> Result<String, Fet
         .get_balance(Address::from_str(account.as_str()).unwrap(), None)
         .await
         .unwrap();
-
     // info!("Hello {}", balance_from.clone());
-
     Ok(balance_from.to_string())
 }
 
@@ -129,8 +123,8 @@ impl Component for App {
                     Ok(addr) => hex::encode(H160::as_bytes(&addr.address()).to_vec()),
                     Err(e) => "0x1".to_string(),
                 };
-                self.account = address_hex.clone();
-                let msg = app::create_siwe_str(address_hex);
+                self.account = app::eip55(address_hex.clone());
+                let msg = app::create_siwe_str(self.account.clone());
                 self.sign_msg = msg.replace("\n", "<br>");
                 self.show_confirm = true;
                 true
@@ -197,7 +191,7 @@ impl Component for App {
 
          <div>
             <lable>{"Account:"}</lable>
-            <lable> {"0x"} {self.account.clone()} </lable>
+            <lable> {self.account.clone()} </lable>
          </div>
          <div class="operatiton">
            <button onclick={ctx.link().callback(|_| Msg::GetBalance(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
@@ -215,8 +209,6 @@ impl Component for App {
 impl App {
     fn view_sign_msg(&self, ctx: &Context<Self>) -> Html {
         let sign_msg = &self.sign_msg.as_str();
-        // let parts: Vec<&str> = sign_msg.split("<br>").collect();
-
         html! {
             <div class = "pream">
             { for sign_msg.split("<br>").map(|s| html!{<p>{ s }</p>}) }
@@ -226,10 +218,6 @@ impl App {
 }
 
 fn main() {
-    // let text = "This is some<br>example<br>text";
-    // let parts: Vec<&str> = text.split("<br>").collect();
-    // for part in parts {
-    //     println!("{}", part);
-    // }
+
     yew::Renderer::<App>::new().render();
 }

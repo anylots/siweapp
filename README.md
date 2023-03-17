@@ -1,10 +1,11 @@
 # Sign In With Ethereum Using Rust
-
 Verify the ownership of a account by signing a standard message.
 
 
 ## Motivation
-Provide authentication services based on Ethereum at the frontend and backend.
+* Enable users to use their Ethereum accounts to access web services instead of accounts owned by Web2. 
+
+* Ethereum WASM support is very high potential.
 
 ## Assembly
 #### Frontend: rust for wasm; 

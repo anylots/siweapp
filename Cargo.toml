@@ -9,12 +9,10 @@ edition = "2021"
 siwe = "0.5"
 ethers = "0.17.0"
 hex = "0.4"
-async-std = { version = "1.10", features = ["attributes"] }
 sha3 = "0.10.2"
-actix-web = "3"
-serde = "1.0.154"
-actix-cors = "0.5.4"
-jsonrpc-http-server = "18.0.0"
-jsonrpc-core = "18.0.0"
-jsonrpc-derive = "18.0.0"
-jsonrpc-core-client = "18.0.0"
+serde = "1.0"
+serde_json = "1.0"
+axum = "0.4.3"
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.4", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
