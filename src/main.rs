@@ -1,3 +1,4 @@
+mod app;
 use std::str::FromStr;
 
 use actix_cors::Cors;
@@ -24,8 +25,12 @@ struct Info {
     sig: String,
 }
 
+fn main(){
+    app::server_start();
+}
+
 #[actix_web::main]
- async fn main() -> std::io::Result<()> {
+ async fn test() -> std::io::Result<()> {
     println!("start SIWE app");
 
     // HttpServer::new(|| App::new().wrap(cors).service(hello))

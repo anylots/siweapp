@@ -52,7 +52,7 @@ pub fn create_siwe_str(address: String) -> String {
 }
 
 pub async fn sign_in(message: String, sig: Signature, address: String)->String {
-    let url = "http://127.0.0.1:3030";
+    let url = "http://127.0.0.1:3030/";
     let client = reqwest::Client::new();
 
     let request = SignRequest{
@@ -60,11 +60,12 @@ pub async fn sign_in(message: String, sig: Signature, address: String)->String {
         sig,
         address,
     };
-    let data = serde_json::to_string(&request).unwrap();
+    let data = serde_json::to_string(&request).unwrap().as_str();
+    let param = "{\"msg\":\"teat\"}";
     let response = client
         .post(url)
         .header("Content-Type", "application/json")
-        .body(data)
+        .body(param)
         .send()
         .await
         .unwrap();

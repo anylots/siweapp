@@ -1,29 +1,32 @@
-use std::future;
+use jsonrpc_core::Result;
+use jsonrpc_derive::rpc;
+use jsonrpc_http_server::*;
 
-use jsonrpc_core::{Result, BoxFuture};
-use jsonrpc_http_server::ServerBuilder;
-use common::Rpc;
+#[rpc]
+pub trait Rpc {
+    /// Adds two numbers and returns a result
+    #[rpc(name = "sign_in")]
+    fn sign_in(&self, msg: String) -> Result<String>;
+}
 
-struct RpcImpl;
-
-// Server implementation
+pub struct RpcImpl;
 impl Rpc for RpcImpl {
-    fn add(&self, a: u64, b: u64) -> Result<u64> {
-        Ok(a + b)
-    }
-
-    fn call(&self, _: u64) -> BoxFuture<Result<String>> {
-        Box::pin(future::ready(Ok("OK".to_owned())))
+    fn sign_in(&self, msg: String) -> Result<String> {
+        println!("{}", "Test1");
+        Ok("Test1".to_string())
     }
 }
 
-fn main() {
-	let mut io = jsonrpc_core::IoHandler::new();
-	io.extend_with(RpcImpl.to_delegate());
-	let server = ServerBuilder::new(io)
-		.threads(3)
-		.start_http(&"127.0.0.1:3030".parse().unwrap())
-		.unwrap();
+pub fn server_start() {
+    let mut io = jsonrpc_core::IoHandler::new();
+    io.extend_with(RpcImpl.to_delegate());
+    let server = ServerBuilder::new(io)
+        .cors(DomainsValidation::AllowOnly(vec![
+            AccessControlAllowOrigin::Any,
+        ]))
+        .threads(3)
+        .start_http(&"127.0.0.1:3030".parse().unwrap())
+        .unwrap();
 
-	server.wait();
+    server.wait();
 }

@@ -188,7 +188,7 @@ impl Component for App {
                 self.view_sign_msg(ctx)
             }
             if self.show_confirm {
-                <button>{"Confirm SignIn"}</button>
+                <button onclick={ctx.link().callback(|_| Msg::SignIn())}>{"Confirm SignIn"}</button>
             }
         <div>
           <lable>{"PrivateKey:"}</lable>
