@@ -1,12 +1,14 @@
 mod app;
 
-use std::str::FromStr;
 use ethers::signers::{LocalWallet, Signer};
 use hex::FromHex;
+use std::str::FromStr;
 
 use ethers::core::types::Address;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
+use ethers::types::Signature;
+
 use std::error::Error;
 use std::fmt::{self, Debug, Display, Formatter};
 use wasm_bindgen::prelude::*;
@@ -56,19 +58,25 @@ async fn fetch_balance(url: &'static str, account: String) -> Result<String, Fet
     Ok(balance_from.to_string())
 }
 
+// async fn
+
 enum Msg {
     SetBalance(FetchState<String>),
     SetAccount(String),
     SetPrivateKey(String),
     GetBalance(String),
-    NoticeSignIn(String),
+    NoticeSignIn(),
+    SignIn(),
+    SignInResult(String),
     GetError,
 }
 struct App {
     account_state: FetchState<String>,
     account: String,
-    privateKey: String,
+    private_key: String,
     sign_msg: String,
+    show_confirm: bool,
+    sign_in_result: String,
 }
 
 impl Component for App {
@@ -79,8 +87,10 @@ impl Component for App {
         Self {
             account_state: FetchState::NotFetching,
             account: String::from("0x1"),
-            privateKey: String::from("0x1"),
+            private_key: String::from("0x1"),
             sign_msg: String::from("0x1"),
+            show_confirm: false,
+            sign_in_result: String::from("0x1"),
         }
     }
 
@@ -107,26 +117,41 @@ impl Component for App {
                 true
             }
 
-            Msg::SetPrivateKey(privateKey) => {
-                self.privateKey = privateKey;
+            Msg::SetPrivateKey(private_key) => {
+                self.private_key = private_key;
                 true
             }
 
-            Msg::NoticeSignIn(new_account) => {
+            Msg::NoticeSignIn() => {
                 // instantiate the wallet
-                
-                let wallet = self.privateKey.as_str()
-                    .parse::<LocalWallet>();
-                let address_hex = match wallet{
+                let wallet = self.private_key.as_str().parse::<LocalWallet>();
+                let address_hex = match wallet {
                     Ok(addr) => hex::encode(H160::as_bytes(&addr.address()).to_vec()),
                     Err(e) => "0x1".to_string(),
-
                 };
                 self.account = address_hex.clone();
-                let mut msg = app::createSiweStr(address_hex);
+                let msg = app::create_siwe_str(address_hex);
                 self.sign_msg = msg.replace("\n", "<br>");
+                self.show_confirm = true;
                 true
             }
+
+            Msg::SignIn() => {
+                let wallet = self.private_key.as_str().parse::<LocalWallet>().unwrap();
+                let address = self.account.clone();
+                let msg = app::create_siwe_str(address.clone());
+                ctx.link().send_future(async move {
+                    let signature = wallet.sign_message(msg.as_str()).await.unwrap();
+                    let result = app::sign_in(msg, signature, address).await;
+                    Msg::SignInResult(result)
+                });
+                true
+            }
+            Msg::SignInResult(sign_in_result) => {
+                self.sign_in_result = sign_in_result;
+                true
+            }
+
             Msg::GetError => {
                 ctx.link().send_future(async {
                     match fetch_balance(RPC, String::from("1")).await {
@@ -159,14 +184,15 @@ impl Component for App {
         html! {
             <main>
             <h1 class = "caption">{ "Sign-In With Ethereum" }</h1>
-
             {
                 self.view_sign_msg(ctx)
             }
-
+            if self.show_confirm {
+                <button>{"Confirm SignIn"}</button>
+            }
         <div>
           <lable>{"PrivateKey:"}</lable>
-          <input {oninput}  class = "privateKey" value={self.privateKey.clone()} />
+          <input {oninput}  class = "privateKey" value={self.private_key.clone()} />
         </div>
 
          <div>
@@ -177,7 +203,7 @@ impl Component for App {
            <button onclick={ctx.link().callback(|_| Msg::GetBalance(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
             { "Check Balance" }
            </button>
-           <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
+           <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn())}>
             { "SignIn" }
            </button>
          </div>
