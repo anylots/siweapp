@@ -86,7 +86,7 @@ export default class Siwe extends Component {
         let param = { message: message, sig: sig };
 
 
-        await fetch('http://127.0.0.1:8080', {
+        await fetch('http://127.0.0.1:3030/sign_in', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
