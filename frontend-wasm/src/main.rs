@@ -1,10 +1,7 @@
 mod app;
 
 use ethers::signers::{LocalWallet, Signer};
-use std::str::FromStr;
-use ethers::core::types::Address;
 use ethers::prelude::*;
-use ethers::providers::{Http, Provider};
 use std::error::Error;
 use std::fmt::{self, Debug, Display, Formatter};
 use wasm_bindgen::prelude::*;
@@ -40,17 +37,6 @@ pub enum FetchState<T> {
     Failed(FetchError),
 }
 
-/// fetch_balance.
-async fn fetch_balance(url: &'static str, account: String) -> Result<String, FetchError> {
-    let provider = Provider::<Http>::try_from("http://47.242.179.164:9933").unwrap();
-
-    let balance_from = provider
-        .get_balance(Address::from_str(account.as_str()).unwrap(), None)
-        .await
-        .unwrap();
-    // info!("Hello {}", balance_from.clone());
-    Ok(balance_from.to_string())
-}
 
 // async fn
 
@@ -58,7 +44,7 @@ enum Msg {
     SetBalance(FetchState<String>),
     SetAccount(String),
     SetPrivateKey(String),
-    GetBalance(String),
+    GetBalance(),
     NoticeSignIn(),
     SignIn(),
     SignInResult(String),
@@ -94,12 +80,15 @@ impl Component for App {
                 self.account_state = fetch_state;
                 true
             }
-            Msg::GetBalance(account) => {
-                let account1 = self.account.clone();
+            Msg::GetBalance() => {
+                let account = self.account.clone();
+                if account == "0x1" {
+                    return true;
+                }
                 ctx.link().send_future(async move {
-                    match fetch_balance(RPC, account1).await {
+                    match app::fetch_balance(account).await {
                         Ok(md) => Msg::SetBalance(FetchState::Success(md)),
-                        Err(err) => Msg::SetBalance(FetchState::Failed(err)),
+                        Err(err) => Msg::SetBalance(FetchState::Failed(FetchError::from(JsValue::from_str("fetch fail")))),
                     }
                 });
                 ctx.link()
@@ -121,13 +110,19 @@ impl Component for App {
                 let wallet = self.private_key.as_str().parse::<LocalWallet>();
                 let address_hex = match wallet {
                     Ok(addr) => hex::encode(H160::as_bytes(&addr.address()).to_vec()),
-                    Err(e) => "0x1".to_string(),
+                    Err(e) => "error".to_string(),
                 };
-                self.account = app::eip55(address_hex.clone());
-                let msg = app::create_siwe_str(self.account.clone());
-                self.sign_msg = msg.replace("\n", "<br>");
-                self.show_confirm = true;
-                true
+                if address_hex != "error" {
+                    self.account = app::eip55(address_hex.clone());
+                    let msg = app::create_siwe_str(self.account.clone());
+                    self.sign_msg = msg.replace("\n", "<br>");
+                    self.show_confirm = true;
+                    true
+                } else {
+                    self.sign_msg = String::from("privateKey invalid");
+                    self.show_confirm = false;
+                    true
+                }
             }
 
             Msg::SignIn() => {
@@ -147,12 +142,6 @@ impl Component for App {
             }
 
             Msg::GetError => {
-                ctx.link().send_future(async {
-                    match fetch_balance(RPC, String::from("1")).await {
-                        Ok(md) => Msg::SetBalance(FetchState::Success(md)),
-                        Err(err) => Msg::SetBalance(FetchState::Failed(err)),
-                    }
-                });
                 ctx.link()
                     .send_message(Msg::SetBalance(FetchState::Fetching));
                 false
@@ -167,13 +156,6 @@ impl Component for App {
             let target: HtmlInputElement = event_target.dyn_into().unwrap_throw();
             Msg::SetPrivateKey(target.value())
         });
-
-        let value: String = match &self.account_state {
-            FetchState::NotFetching => String::from("0x1"),
-            FetchState::Fetching => String::from("fetching"),
-            FetchState::Success(data) => data.clone(),
-            FetchState::Failed(err) => String::from("0x1"),
-        };
 
         html! {
             <main>
@@ -194,7 +176,7 @@ impl Component for App {
             <lable> {self.account.clone()} </lable>
          </div>
          <div class="operatiton">
-           <button onclick={ctx.link().callback(|_| Msg::GetBalance(String::from("0x17155EE3e09033955D272E902B52E0c10cB47A91")))}>
+           <button onclick={ctx.link().callback(|_| Msg::GetBalance())}>
             { "Check Balance" }
            </button>
            <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn())}>
@@ -218,6 +200,6 @@ impl App {
 }
 
 fn main() {
-
+    // start siwe-wasm
     yew::Renderer::<App>::new().render();
 }
