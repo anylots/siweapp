@@ -16,15 +16,15 @@ struct SignRequest {
 }
 
 pub fn create_siwe_str(address: String) -> String {
-    let mut msg = String::from("Domain");
+    let mut msg = String::from("localhost:4361");
     msg += " wants you to sign in with your Ethereum account:\n";
     msg += address.as_str();
     msg += "\n";
     msg += "I accept the ServiceOrg Terms of Service: https://service.org/tos\n";
-    msg += "URI: https://service.org/login\n";
+    msg += "\nURI: http://localhost:4361\n";
     msg += "Version: 1\n";
     msg += "Chain ID: 1\n";
-    msg += "Nonce: 32891756";
+    msg += "Nonce: 32891756\n";
     msg += "Issued At: 2021-09-30T16:25:24Z\n";
     msg += "Resources:\n";
     msg += "- https://example.com/my-web2-claim.json";
