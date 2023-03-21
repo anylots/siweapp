@@ -12,6 +12,9 @@ struct SignRequest {
     address: String,
 }
 
+/**
+ * sign in service
+ */
 pub async fn process_sign_in(param: String) -> String {
     println!("process_sign_in");
     println!("{}", param);
@@ -23,6 +26,10 @@ pub async fn process_sign_in(param: String) -> String {
 
     return "success".to_string();
 }
+
+/**
+ * verify siwe message
+ */
 async fn verify_siwe(message: &str, signature: Signature, address: &str) -> Result<(), String> {
     //step1. verify ecdsa
     if let Err(e) = signature.verify(message.clone(), Address::from_str(address).unwrap()) {
