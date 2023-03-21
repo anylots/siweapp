@@ -8,9 +8,9 @@ Using siwe-rs to implement EIP-4361 in a appliaction.
 * Ethereum WASM support is very high potential.
 
 ## Assembly
-#### Frontend: rust for wasm; 
+##### Frontend: rust for wasm
 Sign the message(EIP-4361 string representations) and submit account, message, and signature to the backend.
-#### Banckend: rust for siwe
+##### Banckend: rust for siwe
 Receive the request, use the signature to recover the address, and verify the account.
 
 ## Running
@@ -20,6 +20,7 @@ Receive the request, use the signature to recover the address, and verify the ac
 run backend:
 cargo run --release
 `
+<br>
 `
 run frontend:
 trunk serve --release

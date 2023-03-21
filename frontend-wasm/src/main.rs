@@ -1,7 +1,7 @@
 mod app;
 
-use ethers::signers::{LocalWallet, Signer};
 use ethers::prelude::*;
+use ethers::signers::{LocalWallet, Signer};
 use std::error::Error;
 use std::fmt::{self, Debug, Display, Formatter};
 use wasm_bindgen::prelude::*;
@@ -35,7 +35,6 @@ pub enum FetchState<T> {
     Failed(FetchError),
 }
 
-
 enum Msg {
     SetBalance(FetchState<String>),
     SetAccount(String),
@@ -55,7 +54,7 @@ struct App {
     sign_in_result: String,
 }
 
-impl Default for App{
+impl Default for App {
     fn default() -> Self {
         Self {
             account_state: FetchState::NotFetching,
@@ -87,14 +86,16 @@ impl Component for App {
                 if account == "0x1" {
                     return true;
                 }
+                ctx.link()
+                    .send_message(Msg::SetBalance(FetchState::Fetching));
                 ctx.link().send_future(async move {
                     match app::fetch_balance(account).await {
                         Ok(md) => Msg::SetBalance(FetchState::Success(md)),
-                        Err(err) => Msg::SetBalance(FetchState::Failed(FetchError::from(JsValue::from_str("fetch fail")))),
+                        Err(err) => Msg::SetBalance(FetchState::Failed(FetchError::from(
+                            JsValue::from_str("fetch fail"),
+                        ))),
                     }
                 });
-                ctx.link()
-                    .send_message(Msg::SetBalance(FetchState::Fetching));
                 false
             }
             Msg::SetAccount(new_account) => {
@@ -121,7 +122,7 @@ impl Component for App {
                     self.show_confirm = true;
                     true
                 } else {
-                    self.sign_msg = String::from("privateKey invalid");
+                    self.sign_msg = String::from("PrivateKey Invalid");
                     self.show_confirm = false;
                     true
                 }
@@ -161,31 +162,29 @@ impl Component for App {
 
         html! {
             <main>
-            <h1 class = "caption">{ "Sign-In With Ethereum" }</h1>
-            {
-                self.view_sign_msg(ctx)
-            }
-            if self.show_confirm {
+                <h1 class="caption">{ "Sign-In With Ethereum" }</h1>
+                { self.view_sign_msg(ctx) }
+                if self.show_confirm {
                 <button onclick={ctx.link().callback(|_| Msg::SignIn())}>{"Confirm SignIn"}</button>
-            }
-        <div>
-          <lable>{"PrivateKey:"}</lable>
-          <input {oninput}  class = "privateKey" value={self.private_key.clone()} />
-        </div>
+                }
+                <div>
+                    <lable>{"PrivateKey:"}</lable>
+                    <input {oninput} class="privateKey" value={self.private_key.clone()} />
+                </div>
 
-         <div>
-            <lable>{"Account:"}</lable>
-            <lable> {self.account.clone()} </lable>
-         </div>
-         <div class="operatiton">
-           <button onclick={ctx.link().callback(|_| Msg::GetBalance())}>
-            { "Check Balance" }
-           </button>
-           <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn())}>
-            { "SignIn" }
-           </button>
-         </div>
-        </main>
+                <div>
+                    <lable>{"Account:"}</lable>
+                    <lable> {self.account.clone()} </lable>
+                </div>
+                <div class="operatiton">
+                    <button onclick={ctx.link().callback(|_| Msg::GetBalance())}>
+                        { "Check Balance" }
+                    </button>
+                    <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn())}>
+                        { "SignIn" }
+                    </button>
+                </div>
+            </main>
         }
     }
 }

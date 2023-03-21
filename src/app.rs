@@ -16,15 +16,11 @@ pub async fn process_sign_in(param: String) -> String {
     println!("process_sign_in");
     println!("{}", param);
     let sign_request: SignRequest = serde_json::from_str(param.as_str()).unwrap();
-    if let Err(e) = verify_siwe(
-        &sign_request.message,
-        sign_request.sig,
-        &sign_request.address,
-    )
-    .await
-    {
+    if let Err(e) = verify_siwe(&sign_request.message, sign_request.sig, &sign_request.address,
+    ).await{
         return e.to_string();
     }
+
     return "success".to_string();
 }
 async fn verify_siwe(message: &str, signature: Signature, address: &str) -> Result<(), String> {
