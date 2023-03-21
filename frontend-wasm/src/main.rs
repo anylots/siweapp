@@ -9,8 +9,6 @@ use web_sys::{HtmlInputElement, InputEvent};
 use yew::{html, Component, Context, Html};
 // use web_sys::Window;
 
-const RPC: &str = "http://47.242.179.164:9933";
-
 /// Something wrong has occurred while fetching an external resource.
 #[derive(Debug, Clone, PartialEq)]
 pub struct FetchError {
@@ -38,8 +36,6 @@ pub enum FetchState<T> {
 }
 
 
-// async fn
-
 enum Msg {
     SetBalance(FetchState<String>),
     SetAccount(String),
@@ -59,19 +55,25 @@ struct App {
     sign_in_result: String,
 }
 
+impl Default for App{
+    fn default() -> Self {
+        Self {
+            account_state: FetchState::NotFetching,
+            account: "0x1".to_owned(),
+            private_key: "0x1".to_owned(),
+            sign_msg: "0x1".to_owned(),
+            show_confirm: false,
+            sign_in_result: "0x1".to_owned(),
+        }
+    }
+}
+
 impl Component for App {
     type Message = Msg;
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            account_state: FetchState::NotFetching,
-            account: String::from("0x1"),
-            private_key: String::from("0x1"),
-            sign_msg: String::from("0x1"),
-            show_confirm: false,
-            sign_in_result: String::from("0x1"),
-        }
+        Self::default()
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
