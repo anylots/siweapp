@@ -11,7 +11,7 @@ Using siwe-rs to implement EIP-4361 in a appliaction.
 ##### Frontend: rust for wasm
 Sign the message(EIP-4361 string representations) and submit account, message, and signature to the backend.
 ##### Banckend: rust for siwe
-Receive the request, use the signature to recover the address, and verify the account.
+Receive the request, use the signature to recover the address, and verify the account and nonce, date, domain.
 
 ## Running
 *You may need to pre install the Rust / Wasm build tool:* *https://trunkrs.dev/#install*
