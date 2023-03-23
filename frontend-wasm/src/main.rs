@@ -167,9 +167,9 @@ impl Component for App {
                 if self.show_confirm {
                 <button onclick={ctx.link().callback(|_| Msg::SignIn())}>{"Confirm SignIn"}</button>
                 }
-                <div>
-                    <lable>{"PrivateKey:"}</lable>
-                    <input {oninput} class="privateKey" value={self.private_key.clone()} />
+                <div class="privateKey-div">
+                    <lable class="privateKey-lable">{"PrivateKey:"}</lable>
+                    <input {oninput} class="privateKey form-input" value={self.private_key.clone()} />
                 </div>
 
                 <div>
@@ -177,10 +177,10 @@ impl Component for App {
                     <lable> {self.account.clone()} </lable>
                 </div>
                 <div class="operatiton">
-                    <button onclick={ctx.link().callback(|_| Msg::GetBalance())}>
+                    <button class="button" onclick={ctx.link().callback(|_| Msg::GetBalance())}>
                         { "Check Balance" }
                     </button>
-                    <button class="signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn())}>
+                    <button class="button signIn" onclick={ctx.link().callback(|_| Msg::NoticeSignIn())}>
                         { "SignIn" }
                     </button>
                 </div>

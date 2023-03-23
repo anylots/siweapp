@@ -37,24 +37,28 @@ main {
 }
 
 
-input {
-  width: 400px;
-  margin-left: 26px;
+.privateKey-div{
+  display:flex;
+  width: 600px;
+  margin-left:30px;
+}
+
+.privateKey-lable{
+  line-height:25px;
 }
 
 .privateKey{
-  width: 500px;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 
 .operatiton{
   margin-top: 10px;
 }
 
-button{
-  color: #fff;
-  border-color: #1890ff;
-  background: #1890ff;
-}
+// button{
+//   color: #fff;
+//   border-color: #1890ff;
+//   background: #1890ff;
+// }
 
 
