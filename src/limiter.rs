@@ -1,14 +1,14 @@
+use std::time::{Instant, Duration};
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
 
-pub struct TokenBucket {
+struct TokenBucket {
     capacity: u64,
     tokens: u64,
     last_update: Instant,
 }
 
 impl TokenBucket {
-    pub fn new(capacity: u64) -> Self {
+    fn new(capacity: u64) -> Self {
         TokenBucket {
             capacity,
             tokens: capacity,
@@ -16,7 +16,7 @@ impl TokenBucket {
         }
     }
 
-    pub fn acquire(&mut self, tokens: u64) -> bool {
+    fn acquire(&mut self, tokens: u64) -> bool {
         self.update_tokens();
         if tokens > self.tokens {
             return false;
@@ -32,16 +32,6 @@ impl TokenBucket {
         self.tokens = std::cmp::min(self.tokens + tokens_generated, self.capacity);
         self.last_update = now;
     }
-}
-
-// 使用 Arc 和 Mutex 来定义全局变量 my_global_var
-lazy_static::lazy_static! {
-    pub static ref token_bucket: Arc<Mutex<TokenBucket>> =
-        Arc::new(Mutex::new(TokenBucket::new(100)));
-}
-
-pub fn new_limiter() -> Arc<Mutex<TokenBucket>> {
-    return token_bucket.clone();
 }
 
 fn main() {
