@@ -16,3 +16,4 @@ axum = "0.4.3"
 tower = { version = "0.4", features = ["full"] }
 tower-http = { version = "0.4", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
+lazy_static = "1.4.0"
